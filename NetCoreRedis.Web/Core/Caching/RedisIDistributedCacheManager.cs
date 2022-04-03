@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace NetCoreRedis.Web.Core.Caching
 {
-    public class RedisIDistributedCacheManager:ICacheManager
+    public class RedisIDistributedCacheManager : ICacheManager
     {
         private readonly IDistributedCache _distributedCache;
 
@@ -43,16 +43,16 @@ namespace NetCoreRedis.Web.Core.Caching
             var cacheByteArray = _distributedCache.Get(cacheKey.Key);
             if (cacheByteArray == null)
             {
-                var byteArray = acquire();
-                if (byteArray != null)
+                var model = acquire();
+                if (model != null)
                 {
-                    Set(cacheKey, byteArray);
+                    Set(cacheKey, model);
                 }
-                return byteArray;
+                return model;
             }
 
-            var model = ByteArrayToModel<T>(cacheByteArray);
-            return model;
+            var cacheModel = ByteArrayToModel<T>(cacheByteArray);
+            return cacheModel;
         }
 
         public async Task<T> GetOrCreateAsync<T>(CacheKey cacheKey, Func<T> acquire)
@@ -65,16 +65,16 @@ namespace NetCoreRedis.Web.Core.Caching
             var cacheByteArray = await _distributedCache.GetAsync(cacheKey.Key);
             if (cacheByteArray == null)
             {
-                var byteArray = acquire();
-                if (byteArray != null)
+                var model = acquire();
+                if (model != null)
                 {
-                    await SetAsync(cacheKey, byteArray);
+                    await SetAsync(cacheKey, model);
                 }
-                return byteArray;
+                return model;
             }
 
-            var model = ByteArrayToModel<T>(cacheByteArray);
-            return model;
+            var cacheModel = ByteArrayToModel<T>(cacheByteArray);
+            return cacheModel;
         }
 
         public byte[] Get(string key)
